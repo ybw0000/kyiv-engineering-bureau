@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'shops',
+    'graphene_django',
 ]
 
 MIDDLEWARE = [
@@ -118,3 +119,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = BASE_DIR
+
+GRAPHENE = {
+    'SCHEMA': 'core.schema.schema',
+}
