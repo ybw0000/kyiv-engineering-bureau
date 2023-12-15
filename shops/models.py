@@ -13,7 +13,11 @@ class Shop(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     sales_commission = models.DecimalField(
-        max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)]
+        max_digits=5,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        default=0,
+        blank=True,
     )
 
     def __str__(self):
@@ -53,7 +57,14 @@ class Product(models.Model):
     description = models.TextField()
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
     categories = models.ManyToManyField(Category, related_name='products', through=ProductCategory)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2, help_text='The price of the product in UAH.')
+    weight = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    keywords = models.JSONField(
+        default=list,
+        blank=True,
+        help_text='Keywords must be entered using a comma-separated list of keywords. '
+        'Example: ["keyword1", "keyword2", "keyword3"]',
+    )
 
     def __str__(self):
         return f'ID:{self.id} | NAME:{self.name} | SHOP:{self.shop} | PRICE:{self.price}'
