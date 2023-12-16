@@ -1,6 +1,5 @@
 import graphene
 from django.db.models import F
-from django.db.models import Min
 from django.db.models import OuterRef
 from django.db.models import Subquery
 from graphene_django import DjangoObjectType
@@ -33,16 +32,13 @@ class Query(graphene.ObjectType):
 
     def resolve_lowest_in_each_category(self, info, **kwargs):
         subquery = (
-            Product.objects.filter(shop_id=OuterRef('shop_id'), categories=OuterRef('categories'))
-            .values('shop_id', 'categories')
-            .annotate(min_price=Min('price'))
-            .values('min_price')
+            Product.objects.filter(categories=OuterRef('categories'))
+            .filter(shop=OuterRef('shop'))
+            .order_by('price')
+            .values('price')[:1]
         )
 
-        result = Product.objects.annotate(category_id=F('categories__id'), cheapest_price=Subquery(subquery)).filter(
-            price=F('cheapest_price')
-        )
-        return result
+        return Product.objects.annotate(min_price=Subquery(subquery)).filter(price=F('min_price'))
 
 
 schema = graphene.Schema(query=Query)
